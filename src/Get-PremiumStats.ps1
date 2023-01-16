@@ -10,7 +10,7 @@ function Get-TradeData {
     [Parameter(Mandatory=$True,Position=0)]
       [String]$DataFile
   )
-  Import-Csv $DataFile
+  Import-Csv $DataFile | Where-Object { $_.Type -eq 'Trade' }
 }
 
 function Get-TradeStats {
