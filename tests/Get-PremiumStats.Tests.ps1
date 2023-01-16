@@ -31,29 +31,30 @@ Describe 'Get-TradeData' {
 
 Describe 'TradeData calculations' {
   BeforeAll {
-    $TradeData = Get-TradeData $InputFile
+    $obj = Get-TradeStats -TradeData (Get-TradeData $InputFile)
   }
 
-  It 'returns a sum of premium collected' {
-    Get-Premium $TradeData 'Collected' | Should -Be 3065
+  It 'correctly calculate Premium Collected' {
+    $obj.'Premium Collected' | Should -Be 3095
   }
 
-  It 'returns a sum of premium paid' {
-    Get-Premium $TradeData 'Paid' | Should -Be 2280
+  It 'correctly calculates Premium Paid' {
+    $obj.'Premium Paid' | Should -Be 2365
   }
 
-  Context 'Get-PremiumStats' {
-    BeforeAll {
-      $Collected = Get-Premium $TradeData 'Collected'
-      $Paid = Get-Premium $TradeData 'Paid'
-    }
+  It 'correctly calculates Fees' {
+    $obj.Fees | Should -Be 50.88
+  }
 
-    It 'returns the premium capture rate' {
-      Get-PremiumStat $Collected $Paid 'PCR' | Should -Be 25.61
-    }
+  It 'correctly calculates Commissions' {
+    $obj.Commissions | Should -Be 38
+  }
 
-    It 'returns the profit and loss' {
-      Get-PremiumStat $Collected $Paid 'PL' | Should -Be 785
-    }
+  It 'correctly calculates Profit / Loss' {
+    $obj.'Profit / Loss' | Should -Be 679.12
+  }
+
+  It 'correctly calculates Premium Capture Rate' {
+    $obj.'Premium Capture Rate' | Should -Be 21.94
   }
 }
