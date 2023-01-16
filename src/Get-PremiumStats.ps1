@@ -13,40 +13,38 @@ function Get-TradeData {
   Import-Csv $DataFile
 }
 
-function Get-Premium {
+function Get-TradeStats {
   param (
     [Parameter(Mandatory=$True,Position=0)]
-      [PSObject]$TradeData,
-    [Parameter(Mandatory=$True,Position=1)]
-      [ValidateSet('Collected', 'Paid')]
-      [String]$Action
+      [PSObject]$TradeData
   )
-  switch ($Action)
-  {
-    'Collected' { $Act = 'SELL_TO_OPEN' }
-    'Paid' { $Act = 'BUY_TO_CLOSE' }
+  $obj = 0 | Select-Object 'Premium Collected', 'Premium Paid', 'Fees', 'Commissions', 'Profit / Loss', 'Premium Capture Rate'
+  $TradeData | ForEach-Object { $row = $_
+    switch ($row.Action) {
+      'BUY_TO_OPEN' { 
+        $obj.'Premium Paid' += [Math]::Abs($row.Value) 
+        $obj.'Fees' += [Math]::Abs($row.Fees)
+        $obj.'Commissions' += [Math]::Abs($row.Commissions)
+      }
+      'BUY_TO_CLOSE' { 
+        $obj.'Premium Paid' += [Math]::Abs($row.Value) 
+        $obj.'Fees' += [Math]::Abs($row.Fees)
+      }
+      'SELL_TO_OPEN' { 
+        $obj.'Premium Collected' += [Math]::Abs($row.Value) 
+        $obj.'Fees' += [Math]::Abs($row.Fees)
+        $obj.'Commissions' += [Math]::Abs($row.Commissions)
+      }
+      'SELL_TO_CLOSE' { 
+        $obj.'Premium Collected' += [Math]::Abs($row.Value) 
+        $obj.'Fees' += [Math]::Abs($row.Fees)
+      }
+    }
   }
-
-  [Math]::Abs( $($TradeData | Where-Object { 
-    $_.Action -eq $Act
-  } | Measure-Object -Sum Value | Select-Object -ExpandProperty Sum))
-}
-
-function Get-PremiumStat {
-  param (
-    [Parameter(Mandatory=$True,Position=0)]
-      [Int32]$Collected,
-    [Parameter(Mandatory=$True,Position=1)]
-      [Int32]$Paid,
-    [Parameter(Mandatory=$True,Position=2)]
-      [ValidateSet('PL', 'PCR')]
-      [String]$Stat
-  )
-  switch ($Stat)
-  {
-    'PCR' { [Math]::Round(((($Collected - $Paid) / $Collected) * 100), 2) }
-    'PL'  { $Collected - $Paid }
-  }
+  $obj.Fees = [Math]::Round($obj.Fees, 2)
+  $obj.'Profit / Loss' = [Math]::Round((($obj.'Premium Collected' - $obj.'Premium Paid') - $obj.Fees), 2)
+  $obj.'Premium Capture Rate' = [Math]::Round((((($obj.'Premium Collected' - $obj.'Premium Paid') - $obj.Fees) / $obj.'Premium Collected') * 100), 2)
+  $obj
 }
 
 if (Test-Path -Path $InputFile)
@@ -56,10 +54,4 @@ if (Test-Path -Path $InputFile)
   Write-Output ("InputFile '{0}' not found." -f $InputFile)
 }
 
-$obj = "" | Select-Object 'Premium Collected','Premium Paid','Profit / Loss','Premium Capture Rate'
-$obj."Premium Collected" = Get-Premium $TradeData 'Collected'
-$obj."Premium Paid" = Get-Premium $TradeData 'Paid'
-$obj."Profit / Loss" = Get-PremiumStat $obj."Premium Collected" $obj."Premium Paid" 'PL'
-$obj."Premium Capture Rate" = Get-PremiumStat $obj."Premium Collected" $obj."Premium Paid" 'PCR'
-
-Write-Output $obj
+Get-TradeStats -TradeData $TradeData
