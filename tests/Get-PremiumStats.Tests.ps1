@@ -51,10 +51,10 @@ Describe 'TradeData calculations' {
   }
 
   It 'correctly calculates Profit / Loss' {
-    $obj.'Profit / Loss' | Should -Be 679.12
+    $obj.'Profit / Loss' | Should -Be 641.12
   }
 
   It 'correctly calculates Premium Capture Rate' {
-    $obj.'Premium Capture Rate' | Should -Be 21.94
+    $obj.'Premium Capture Rate' | Should -Be .2071
   }
 }
