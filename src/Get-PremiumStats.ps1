@@ -2,7 +2,9 @@
 Param
 (
   [Parameter(Mandatory=$False,Position=0)]
-    [String]$InputFile='tests/2023-01-01_2023-01-13.csv'
+    [String]$InputFile='tests/2023-01-01_2023-01-13.csv',
+  [Parameter(Mandatory=$False,Position=1)]
+    [Switch]$ObjectOut=$False
 )
 
 function Get-TradeData {
@@ -42,8 +44,8 @@ function Get-TradeStats {
     }
   }
   $obj.Fees = [Math]::Round($obj.Fees, 2)
-  $obj.'Profit / Loss' = [Math]::Round((($obj.'Premium Collected' - $obj.'Premium Paid') - $obj.Fees), 2)
-  $obj.'Premium Capture Rate' = [Math]::Round((((($obj.'Premium Collected' - $obj.'Premium Paid') - $obj.Fees) / $obj.'Premium Collected') * 100), 2)
+  $obj.'Profit / Loss' = [Math]::Round((($obj.'Premium Collected' - $obj.'Premium Paid') - ($obj.Fees + $obj.Commissions)), 2)
+  $obj.'Premium Capture Rate' = [Math]::Round(((($obj.'Premium Collected' - $obj.'Premium Paid') - ($obj.Fees + $obj.Commissions)) / $obj.'Premium Collected'), 4)
   $obj
 }
 
@@ -54,4 +56,15 @@ if (Test-Path -Path $InputFile)
   Write-Output ("InputFile '{0}' not found." -f $InputFile)
 }
 
-Get-TradeStats -TradeData $TradeData
+$obj = Get-TradeStats -TradeData $TradeData
+
+if ($ObjectOut) {
+  $obj
+} else {
+  "`n   Premium Collected : {0,15:C}" -f $obj.'Premium Collected'
+  "        Premium Paid : {0,15:C}" -f $obj.'Premium Paid'
+  "                Fees : {0,15:C}" -f $obj.Fees
+  "         Commissions : {0,15:C}" -f $obj.Commissions
+  "       Profit / Loss : {0,15:C}" -f $obj.'Profit / Loss'
+  "Premium Capture Rate : {0,15:P2}`n" -f $obj.'Premium Capture Rate'
+}
