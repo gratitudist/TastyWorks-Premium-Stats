@@ -3,7 +3,7 @@ BeforeAll {
 }
 
 Describe 'Get-TradeData' {
-  It 'returns the trade data from the csv as objects' {
+  It 'returns Tastyworks trade data from the csv as objects' {
     $Reference = [PSCustomObject]@{
       'Action' = 'BUY_TO_CLOSE'
       'Average Price' = '-10.00'
@@ -24,17 +24,41 @@ Describe 'Get-TradeData' {
       'Underlying Symbol' = 'SPX'
       'Value' = '-10.00'
     }
-    $TradeData = Get-TradeData $InputFile | Select-Object -First 1
+    $TradeData = Get-TradeData -FileType 'Tastyworks' -DataFile './tests/2023-01-01_2023-01-13.csv' | Select-Object -First 1
+    Compare-Object -PassThru -IncludeEqual $Reference $TradeData | Select-Object -ExpandProperty SideIndicator | Should -Be '=='
+  }
+
+  It 'returns Fidelity trade data from the csv as objects' {
+    $Reference = [PSCustomObject]@{
+      'Run Date' = '01/09/2023'
+      'Account' = 'Sample Account'
+      'Action' = 'YOU BOUGHT CLOSING TRANSACTION PUT (URNM) SPROTT FDS TR FEB 17 23 $31 (100 SHS) (Cash)'
+      'Symbol' = '-URNM230217P31'
+      'Security Description' = 'PUT (URNM) SPROTT FDS TR FEB 17 23 $31 (100 SHS)'
+      'Security Type' = 'Cash'
+      'Exchange Quality' = '0'
+      'Exchange Currency' = ''
+      'Quantity' = '1'
+      'Currency' = 'USD'
+      'Price' = '0.65'
+      'Exchange Rate' = '0'
+      'Commission' = '' 
+      'Fees' = '0.02'
+      'Accrued Interest' = '' 
+      'Amount' = '-65.02'
+      'Settlement Date' = '01/10/2023'
+    }
+    $TradeData = Get-TradeData -FileType 'Fidelity' -DataFile './tests/Fidelity_Sample.csv' | Select-Object -First 1
     Compare-Object -PassThru -IncludeEqual $Reference $TradeData | Select-Object -ExpandProperty SideIndicator | Should -Be '=='
   }
 }
 
-Describe 'TradeData calculations' {
+Describe 'Tastyworks trade data calculations' {
   BeforeAll {
-    $obj = Get-TradeStats -TradeData (Get-TradeData $InputFile)
+    $obj = Get-TradeStats -DataType 'Tastyworks' -TradeData (Get-TradeData -FileType 'Tastyworks' $InputFile)
   }
 
-  It 'correctly calculate Premium Collected' {
+  It 'correctly calculates Premium Collected' {
     $obj.'Premium Collected' | Should -Be 3095
   }
 
@@ -56,5 +80,45 @@ Describe 'TradeData calculations' {
 
   It 'correctly calculates Premium Capture Rate' {
     $obj.'Premium Capture Rate' | Should -Be .2071
+  }
+}
+
+Describe 'Fidelity trade data calculations' {
+  BeforeAll {
+    $obj = Get-TradeStats -DataType 'Fidelity' -TradeData (Get-TradeData -FileType 'Fidelity' './tests/Fidelity_Sample.csv')
+  }
+
+  It 'correctly calculates Premium Collected' {
+    $obj.'Premium Collected' | Should -Be 3472
+  }
+
+  It 'correctly calculates Premium Paid' {
+    $obj.'Premium Paid' | Should -Be 3162
+  }
+
+  It 'correctly calculates Fees' {
+    $obj.Fees | Should -Be 1.74
+  }
+
+  It 'correctly calculates Commissions' {
+    $obj.Commissions | Should -Be 28.95
+  }
+
+  It 'correctly calculates Profit / Loss' {
+    $obj.'Profit / Loss' | Should -Be 279.31
+  }
+
+  It 'correctly calculates Premium Capture Rate' {
+    $obj.'Premium Capture Rate' | Should -Be .0804
+  }
+}
+
+Describe 'Get-FileType' {
+  It 'correctly identifies Tastyworks file type' {
+    Get-FileType './tests/2023-01-01_2023-01-13.csv' | Should -Be 'Tastyworks'
+  }
+
+  It 'correctly identifies Fidelity file type' {
+    Get-FileType './tests/Fidelity_Sample.csv' | Should -Be 'Fidelity'
   }
 }
