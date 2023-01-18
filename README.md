@@ -1,4 +1,4 @@
-# TastyWorks-Premium-Stats
+# Stats for options premium sellers:
 
 A PowerShell script that calculates premium collected, premium paid, fees, commissions, profit and loss and premium capture rate from TastyWorks history CSV and Fidelity Account_Hisotry.csv files.
 
