@@ -1,9 +1,9 @@
 # TastyWorks-Premium-Stats
 
-A PowerShell script that calculates premium collected, premium paid, fees, commissions, profit and loss and premium capture rate from TastyWorks history CSV files.
+A PowerShell script that calculates premium collected, premium paid, fees, commissions, profit and loss and premium capture rate from TastyWorks history CSV and Fidelity Account_Hisotry.csv files.
 
 Note: The script doesn't currently account for open v closed positions. So if you have open trades when running the script, keep that in mind.
-Note also: This is not affiliated with Tastyworks in any way.
+Note also: This is not affiliated with Tastyworks or Fidelity in any way.
 
 Example:
 
