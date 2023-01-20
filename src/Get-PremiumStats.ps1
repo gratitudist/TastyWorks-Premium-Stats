@@ -4,7 +4,9 @@ Param
   [Parameter(Mandatory=$False,Position=0)]
     [String]$InputFile='tests/2023-01-01_2023-01-13.csv',
   [Parameter(Mandatory=$False,Position=1)]
-    [Switch]$ObjectOut=$False
+    [Switch]$ObjectOut=$False,
+  [Parameter(Mandatory=$False,Position=2)]
+    [String]$FileType
 )
 
 function Get-FileType {
@@ -42,6 +44,7 @@ function Get-TradeData {
       $Reader = New-Object System.IO.StreamReader($DataFile)
       # Fidelity "CSV" files have four lines of 
       # crap before the actual csv data begins
+      # We also have to define the header below
       for($i = 0; $i -lt 5; $i++) {
         $garbage = $Reader.ReadLine()
       }
@@ -69,7 +72,7 @@ function Get-TradeStats {
     [Parameter(Mandatory=$True,Position=1)]
       [String]$DataType
   )
-  $obj = 0 | Select-Object 'Premium Collected', 'Premium Paid', 'Fees', 'Commissions', 'Profit / Loss', 'Premium Capture Rate'
+  $obj = 0 | Select-Object 'Premium Collected', 'Premium Paid', 'Fees', 'Commissions', 'Profit / Loss', 'Premium Capture Rate', 'Trades'
   switch ($DataType) {
     'Tastyworks' {
       $TradeData | ForEach-Object { $row = $_
@@ -78,19 +81,23 @@ function Get-TradeStats {
             $obj.'Premium Paid' += [Math]::Abs($row.Value) 
             $obj.'Fees' += [Math]::Abs($row.Fees)
             $obj.'Commissions' += [Math]::Abs($row.Commissions)
+            $obj.Trades += 1
           }
           'BUY_TO_CLOSE' { 
             $obj.'Premium Paid' += [Math]::Abs($row.Value) 
             $obj.'Fees' += [Math]::Abs($row.Fees)
+            $obj.Trades += 1
           }
           'SELL_TO_OPEN' { 
             $obj.'Premium Collected' += [Math]::Abs($row.Value) 
             $obj.'Fees' += [Math]::Abs($row.Fees)
             $obj.'Commissions' += [Math]::Abs($row.Commissions)
+            $obj.Trades += 1
           }
           'SELL_TO_CLOSE' { 
             $obj.'Premium Collected' += [Math]::Abs($row.Value) 
             $obj.'Fees' += [Math]::Abs($row.Fees)
+            $obj.Trades += 1
           }
         }
       }
@@ -102,21 +109,25 @@ function Get-TradeStats {
             $obj.'Premium Paid' += [Math]::Round([Int]$row.Quantity * 100 * [Decimal]$row.Price, 2)
             $obj.Fees += [Math]::Round([Decimal]$row.Fees, 2)
             $obj.Commissions += [Math]::Round([Decimal]$row.Commission, 2)
+            $obj.Trades += 1
           }
           'YOU BOUGHT CLOSING*' {
             $obj.'Premium Paid' += [Math]::Round([Int]$row.Quantity * 100 * [Decimal]$row.Price, 2)
             $obj.Fees += [Math]::Round([Decimal]$row.Fees, 2)
             $obj.Commissions += [Math]::Round([Decimal]$row.Commission, 2)
+            $obj.Trades += 1
           }
           'YOU SOLD OPENING*' {
             $obj.'Premium Collected' += [Math]::Round([Math]::Abs($row.Quantity) * 100 * [Decimal]$row.Price, 2)
             $obj.Fees += [Math]::Round([Decimal]$row.Fees, 2)
             $obj.Commissions += [Math]::Round([Decimal]$row.Commission, 2)
+            $obj.Trades += 1
           }
           'YOU SOLD CLOSING*' {
             $obj.'Premium Collected' += [Math]::Round([Math]::Abs($row.Quantity) * 100 * [Decimal]$row.Price, 2)
             $obj.Fees += [Math]::Round([Decimal]$row.Fees, 2)
             $obj.Commissions += [Math]::Round([Decimal]$row.Commission, 2)
+            $obj.Trades += 1
           }
         }
       }    
@@ -130,7 +141,9 @@ function Get-TradeStats {
 
 if (Test-Path -Path $InputFile)
 {
-  $FileType = Get-FileType -InputFile $InputFile
+  if (!$FileType) {
+    $FileType = Get-FileType -InputFile $InputFile
+  }
   $TradeData = Get-TradeData -DataFile $InputFile -FileType $FileType
 } else {
   Write-Output ("InputFile '{0}' not found." -f $InputFile)
@@ -146,5 +159,6 @@ if ($ObjectOut) {
   "                Fees : {0,15:C}" -f $obj.Fees
   "         Commissions : {0,15:C}" -f $obj.Commissions
   "       Profit / Loss : {0,15:C}" -f $obj.'Profit / Loss'
-  "Premium Capture Rate : {0,15:P2}`n" -f $obj.'Premium Capture Rate'
+  "Premium Capture Rate : {0,15:P2}" -f $obj.'Premium Capture Rate'
+  "              Trades : {0,15}`n" -f $obj.Trades
 }
