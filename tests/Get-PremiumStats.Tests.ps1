@@ -81,6 +81,10 @@ Describe 'Tastyworks trade data calculations' {
   It 'correctly calculates Premium Capture Rate' {
     $obj.'Premium Capture Rate' | Should -Be .2071
   }
+  
+  It 'correctly calculates the number of trades' {
+    $obj.Trades | Should -Be 63
+  }
 }
 
 Describe 'Fidelity trade data calculations' {
@@ -110,6 +114,10 @@ Describe 'Fidelity trade data calculations' {
 
   It 'correctly calculates Premium Capture Rate' {
     $obj.'Premium Capture Rate' | Should -Be .0804
+  }
+
+  It 'correctly calculates the number of trades' {
+    $obj.Trades | Should -Be 61
   }
 }
 
