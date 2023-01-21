@@ -141,6 +141,7 @@ function Get-TradeStats {
 
 if (Test-Path -Path $InputFile)
 {
+  $InputFile = Resolve-Path -Path $InputFile
   if (!$FileType) {
     $FileType = Get-FileType -InputFile $InputFile
   }
