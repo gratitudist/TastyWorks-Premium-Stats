@@ -1,6 +1,6 @@
 # Stats for options premium sellers:
 
-A PowerShell script that calculates premium collected, premium paid, fees, commissions, profit and loss, premium capture rate and number of trades from TastyWorks history CSV and Fidelity Account_Hisotry.csv files.
+A PowerShell script that calculates premium sold, premium paid, fees, commissions, profit and loss, premium capture rate and number of trades from TastyWorks history CSV and Fidelity Account_Hisotry.csv files.
 
 Note: The script doesn't currently account for open v closed positions. So if you have open trades when running the script, keep that in mind.
 Note also: This is not affiliated with Tastyworks or Fidelity in any way.
@@ -11,7 +11,7 @@ Tastyworks example:
 ```
 ./src/Get-PremiumStats.ps1 -InputFile ./tests/2023-01-01_2023-01-13.csv                                              
 
-   Premium Collected :       $3,095.00
+        Premium Sold :       $3,095.00
         Premium Paid :       $2,365.00
                 Fees :          $50.88
          Commissions :          $38.00
@@ -23,7 +23,7 @@ Fidelity Account_history.csv example:
 ```
 ./src/Get-PremiumStats.ps1 -InputFile ./tests/Fidelity_Sample.csv      
 
-   Premium Collected :       $3,472.00
+        Premium Sold :       $3,472.00
         Premium Paid :       $3,162.00
                 Fees :           $1.74
          Commissions :          $28.95
@@ -35,7 +35,7 @@ Example of returning a PowerShell object:
 ```
 ./src/Get-PremiumStats.ps1 -InputFile ./tests/2023-01-01_2023-01-13.csv -ObjectOut                                   
 
-Premium Collected    : 3095
+Premium Sold         : 3095
 Premium Paid         : 2365
 Fees                 : 50.88
 Commissions          : 38
@@ -46,7 +46,7 @@ Trades               : 63
 Example of converting PowerShell output object to CSV data:
 ```
 ./src/Get-PremiumStats.ps1 -InputFile ./tests/2023-01-01_2023-01-13.csv -ObjectOut | ConvertTo-Csv -NoTypeInformation
-"Premium Collected","Premium Paid","Fees","Commissions","Profit / Loss","Premium Capture Rate","Trades"
+"Premium Sold","Premium Paid","Fees","Commissions","Profit / Loss","Premium Capture Rate","Trades"
 "3095","2365","50.88","38","641.12","0.2071","63"
 ```
 ### Request to readers:
