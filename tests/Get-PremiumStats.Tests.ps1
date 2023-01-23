@@ -58,8 +58,8 @@ Describe 'Tastyworks trade data calculations' {
     $obj = Get-TradeStats -DataType 'Tastyworks' -TradeData (Get-TradeData -FileType 'Tastyworks' $InputFile)
   }
 
-  It 'correctly calculates Premium Collected' {
-    $obj.'Premium Collected' | Should -Be 3095
+  It 'correctly calculates Premium Sold' {
+    $obj.'Premium Sold' | Should -Be 3095
   }
 
   It 'correctly calculates Premium Paid' {
@@ -92,8 +92,8 @@ Describe 'Fidelity trade data calculations' {
     $obj = Get-TradeStats -DataType 'Fidelity' -TradeData (Get-TradeData -FileType 'Fidelity' './tests/Fidelity_Sample.csv')
   }
 
-  It 'correctly calculates Premium Collected' {
-    $obj.'Premium Collected' | Should -Be 3472
+  It 'correctly calculates Premium Sold' {
+    $obj.'Premium Sold' | Should -Be 3472
   }
 
   It 'correctly calculates Premium Paid' {
