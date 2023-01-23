@@ -72,7 +72,7 @@ function Get-TradeStats {
     [Parameter(Mandatory=$True,Position=1)]
       [String]$DataType
   )
-  $obj = 0 | Select-Object 'Premium Collected', 'Premium Paid', 'Fees', 'Commissions', 'Profit / Loss', 'Premium Capture Rate', 'Trades'
+  $obj = 0 | Select-Object 'Premium Sold', 'Premium Paid', 'Fees', 'Commissions', 'Profit / Loss', 'Premium Capture Rate', 'Trades'
   switch ($DataType) {
     'Tastyworks' {
       $TradeData | ForEach-Object { $row = $_
@@ -89,13 +89,13 @@ function Get-TradeStats {
             $obj.Trades += 1
           }
           'SELL_TO_OPEN' { 
-            $obj.'Premium Collected' += [Math]::Abs($row.Value) 
+            $obj.'Premium Sold' += [Math]::Abs($row.Value) 
             $obj.'Fees' += [Math]::Abs($row.Fees)
             $obj.'Commissions' += [Math]::Abs($row.Commissions)
             $obj.Trades += 1
           }
           'SELL_TO_CLOSE' { 
-            $obj.'Premium Collected' += [Math]::Abs($row.Value) 
+            $obj.'Premium Sold' += [Math]::Abs($row.Value) 
             $obj.'Fees' += [Math]::Abs($row.Fees)
             $obj.Trades += 1
           }
@@ -118,13 +118,13 @@ function Get-TradeStats {
             $obj.Trades += 1
           }
           'YOU SOLD OPENING*' {
-            $obj.'Premium Collected' += [Math]::Round([Math]::Abs($row.Quantity) * 100 * [Decimal]$row.Price, 2)
+            $obj.'Premium Sold' += [Math]::Round([Math]::Abs($row.Quantity) * 100 * [Decimal]$row.Price, 2)
             $obj.Fees += [Math]::Round([Decimal]$row.Fees, 2)
             $obj.Commissions += [Math]::Round([Decimal]$row.Commission, 2)
             $obj.Trades += 1
           }
           'YOU SOLD CLOSING*' {
-            $obj.'Premium Collected' += [Math]::Round([Math]::Abs($row.Quantity) * 100 * [Decimal]$row.Price, 2)
+            $obj.'Premium Sold' += [Math]::Round([Math]::Abs($row.Quantity) * 100 * [Decimal]$row.Price, 2)
             $obj.Fees += [Math]::Round([Decimal]$row.Fees, 2)
             $obj.Commissions += [Math]::Round([Decimal]$row.Commission, 2)
             $obj.Trades += 1
@@ -134,8 +134,8 @@ function Get-TradeStats {
     }
   }
   $obj.Fees = [Math]::Round($obj.Fees, 2)
-  $obj.'Profit / Loss' = [Math]::Round((($obj.'Premium Collected' - $obj.'Premium Paid') - ($obj.Fees + $obj.Commissions)), 2)
-  $obj.'Premium Capture Rate' = [Math]::Round(((($obj.'Premium Collected' - $obj.'Premium Paid') - ($obj.Fees + $obj.Commissions)) / $obj.'Premium Collected'), 4)
+  $obj.'Profit / Loss' = [Math]::Round((($obj.'Premium Sold' - $obj.'Premium Paid') - ($obj.Fees + $obj.Commissions)), 2)
+  $obj.'Premium Capture Rate' = [Math]::Round(((($obj.'Premium Sold' - $obj.'Premium Paid') - ($obj.Fees + $obj.Commissions)) / $obj.'Premium Sold'), 4)
   $obj
 }
 
@@ -155,7 +155,7 @@ $obj = Get-TradeStats -TradeData $TradeData -DataType $FileType
 if ($ObjectOut) {
   $obj
 } else {
-  "`n   Premium Collected : {0,15:C}" -f $obj.'Premium Collected'
+  "`n        Premium Sold : {0,15:C}" -f $obj.'Premium Sold'
   "        Premium Paid : {0,15:C}" -f $obj.'Premium Paid'
   "                Fees : {0,15:C}" -f $obj.Fees
   "         Commissions : {0,15:C}" -f $obj.Commissions
