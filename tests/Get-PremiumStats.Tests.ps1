@@ -24,7 +24,7 @@ Describe 'Get-TradeData' {
       'Underlying Symbol' = 'SPX'
       'Value' = '-10.00'
     }
-    $TradeData = Get-TradeData -FileType 'Tastyworks' -DataFile './tests/2023-01-01_2023-01-13.csv' | Select-Object -First 1
+    $TradeData = Get-TradeData -FileType 'Tastyworks' -DataFile './tests/tastyworks_sample.csv' | Select-Object -First 1
     Compare-Object -PassThru -IncludeEqual $Reference $TradeData | Select-Object -ExpandProperty SideIndicator | Should -Be '=='
   }
 
@@ -123,7 +123,7 @@ Describe 'Fidelity trade data calculations' {
 
 Describe 'Get-FileType' {
   It 'correctly identifies Tastyworks file type' {
-    Get-FileType './tests/2023-01-01_2023-01-13.csv' | Should -Be 'Tastyworks'
+    Get-FileType './tests/tastyworks_sample.csv' | Should -Be 'Tastyworks'
   }
 
   It 'correctly identifies Fidelity file type' {
