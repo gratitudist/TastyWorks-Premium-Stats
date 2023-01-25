@@ -2,7 +2,7 @@
 Param
 (
   [Parameter(Mandatory=$False,Position=0)]
-    [String]$InputFile='tests/2023-01-01_2023-01-13.csv',
+    [String]$InputFile='tests/tastyworks_sample.csv',
   [Parameter(Mandatory=$False,Position=1)]
     [Switch]$ObjectOut=$False,
   [Parameter(Mandatory=$False,Position=2)]
