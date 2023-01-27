@@ -85,6 +85,38 @@ Describe 'Tastyworks trade data calculations' {
   It 'correctly calculates the number of trades' {
     $obj.Trades | Should -Be 63
   }
+  
+  It 'correctly calculates the number of long calls opened' {
+    $obj.'Long Calls Opened' | Should -Be 6
+  }
+
+  It 'correctly calculates the number of long calls closed' {
+    $obj.'Long Calls Closed' | Should -Be 1
+  }
+
+  It 'correctly calculates the number of short calls opened' {
+    $obj.'Short Calls Opened' | Should -Be 12
+  }
+
+  It 'correctly calculates the number of short calls closed' {
+    $obj.'Short Calls Closed' | Should -Be 12
+  }
+
+  It 'correctly calculates the number of long puts opened' {
+    $obj.'Long Puts Opened' | Should -Be 5
+  }
+
+  It 'correctly calculates the number of long puts closed' {
+    $obj.'Long Puts Closed' | Should -Be 0
+  }
+
+  It 'correctly calculates the number of short puts opened' {
+    $obj.'Short Puts Opened' | Should -Be 14
+  }
+
+  It 'correctly calculates the number of short puts closed' {
+    $obj.'Short Puts Closed' | Should -Be 13
+  }
 }
 
 Describe 'Fidelity trade data calculations' {
@@ -118,6 +150,38 @@ Describe 'Fidelity trade data calculations' {
 
   It 'correctly calculates the number of trades' {
     $obj.Trades | Should -Be 61
+  }
+
+  It 'correctly calculates the number of long calls opened' {
+    $obj.'Long Calls Opened' | Should -Be 2
+  }
+
+  It 'correctly calculates the number of long calls closed' {
+    $obj.'Long Calls Closed' | Should -Be 2
+  }
+
+  It 'correctly calculates the number of short calls opened' {
+    $obj.'Short Calls Opened' | Should -Be 3
+  }
+
+  It 'correctly calculates the number of short calls closed' {
+    $obj.'Short Calls Closed' | Should -Be 4
+  }
+
+  It 'correctly calculates the number of long puts opened' {
+    $obj.'Long Puts Opened' | Should -Be 4
+  }
+
+  It 'correctly calculates the number of long puts closed' {
+    $obj.'Long Puts Closed' | Should -Be 4
+  }
+
+  It 'correctly calculates the number of short puts opened' {
+    $obj.'Short Puts Opened' | Should -Be 20
+  }
+
+  It 'correctly calculates the number of short puts closed' {
+    $obj.'Short Puts Closed' | Should -Be 22
   }
 }
 
