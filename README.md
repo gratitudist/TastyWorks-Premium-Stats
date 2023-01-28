@@ -6,49 +6,61 @@ Note: The script doesn't currently account for open v closed positions. So if yo
 Note also: This is not affiliated with Tastyworks or Fidelity in any way.
 
 ### New:
-Recently added trade type information to the output. This may be useful for determining win rates, how many short positions were stopped out, etc.
+Added trade type information to the output. This may be useful for determining win rates, how many short positions were stopped out, etc.
+Added -Details flag to control the"pretty print" output of the above trade details. Object output will always include these details.
+Added win rate properties for short calls and puts.
 
 Examples:
 
-Tastyworks example:
+Tastyworks example without details:
 ```
 ./src/Get-PremiumStats.ps1 -InputFile ./tests/tastyworks_sample.csv
 
-        Premium Sold :       $3,095.00
-        Premium Paid :       $2,365.00
-                Fees :          $50.88
-         Commissions :          $38.00
-       Profit / Loss :         $641.12
-Premium Capture Rate :          20.71%
-              Trades :              63
-   Long Calls Opened :               6
-   Long Calls Closed :               1
-  Short Calls Opened :              12
-  Short Calls Closed :              12
-    Long Puts Opened :               5
-    Long Puts Closed :               0
-   Short Puts Opened :              14
-   Short Puts Closed :              13
+        Premium Sold:       $3,095.00
+        Premium Paid:       $2,365.00
+                Fees:          $50.88
+         Commissions:          $38.00
+       Profit / Loss:         $641.12
+Premium Capture Rate:          20.71%
+              Trades:              63
+ Short Call Win Rate:         100.00%
+  Short Put Win Rate:          92.86%
+```
+Tastyworks example with details:
+```
+./src/Get-PremiumStats.ps1 -InputFile ./tests/tastyworks_sample.csv -Details
+
+        Premium Sold:       $3,095.00
+        Premium Paid:       $2,365.00
+                Fees:          $50.88
+         Commissions:          $38.00
+       Profit / Loss:         $641.12
+Premium Capture Rate:          20.71%
+              Trades:              63
+   Long Calls Opened:               6
+   Long Calls Closed:               1
+  Short Calls Opened:              12
+  Short Calls Closed:              12
+    Long Puts Opened:               5
+    Long Puts Closed:               0
+   Short Puts Opened:              14
+   Short Puts Closed:              13
+ Short Call Win Rate:         100.00%
+  Short Put Win Rate:          92.86%
 ```
 Fidelity Account_history.csv example:
 ```
 ./src/Get-PremiumStats.ps1 -InputFile ./tests/Fidelity_Sample.csv
 
-        Premium Sold :       $3,472.00
-        Premium Paid :       $3,162.00
-                Fees :           $1.74
-         Commissions :          $28.95
-       Profit / Loss :         $279.31
-Premium Capture Rate :           8.04%
-              Trades :              61
-   Long Calls Opened :               2
-   Long Calls Closed :               2
-  Short Calls Opened :               3
-  Short Calls Closed :               4
-    Long Puts Opened :               4
-    Long Puts Closed :               4
-   Short Puts Opened :              20
-   Short Puts Closed :              22
+        Premium Sold:       $3,472.00
+        Premium Paid:       $3,162.00
+                Fees:           $1.74
+         Commissions:          $28.95
+       Profit / Loss:         $279.31
+Premium Capture Rate:           8.04%
+              Trades:              61
+ Short Call Win Rate:         133.33%
+  Short Put Win Rate:         110.00%
 ```
 Example of returning a PowerShell object:
 ```
@@ -73,8 +85,8 @@ Short Puts Closed    : 13
 Example of converting PowerShell output object to CSV data:
 ```
 ./src/Get-PremiumStats.ps1 -InputFile ./tests/tastyworks_sample.csv -ObjectOut | ConvertTo-Csv -NoTypeInformation
-"Premium Sold","Premium Paid","Fees","Commissions","Profit / Loss","Premium Capture Rate","Trades","Long Calls Opened","Long Calls Closed","Long Puts Opened","Long Puts Closed","Short Calls Opened","Short Calls Closed","Short Puts Opened","Short Puts Closed"
-"3095","2365","50.88","38","641.12","0.2071","63","6","1","5","0","12","12","14","13"
+"Premium Sold","Premium Paid","Fees","Commissions","Profit / Loss","Premium Capture Rate","Trades","Long Calls Opened","Long Calls Closed","Long Puts Opened","Long Puts Closed","Short Calls Opened","Short Calls Closed","Short Puts Opened","Short Puts Closed","Short Call Win Rate","Short Put Win Rate"
+"3095","2365","50.88","38","641.12","0.2071","63","6","1","5","0","12","12","14","13","1","0.9286"
 ```
 ### Request to readers:
 If you're on a different platform than Tastyworks and have similar CSV output from your platform that you'd like to be able to parse in this way, I'm willing to write a similar script, or even a script that's capable of handling CSV files from multiple platforms. I just need samples CSV files. If this interests you and you're willing to share sample CSVs fro your broker, please let me know. 
