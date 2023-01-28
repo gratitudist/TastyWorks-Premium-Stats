@@ -119,11 +119,11 @@ Describe 'Tastyworks trade data calculations' {
   }
 
   It 'correctly calculates the short call win rate' {
-    $obj.'Short Call Win Rate' | Should -Be 1
+    $obj.'Short Call Win Rate' | Should -Be 0
   }
 
   It 'correctly calculates the short put win rate' {
-    $obj.'Short Put Win Rate' | Should -Be 0.9286
+    $obj.'Short Put Win Rate' | Should -Be 0.0714
   }
 }
 
@@ -193,11 +193,11 @@ Describe 'Fidelity trade data calculations' {
   }
 
   It 'correctly calculates the short call win rate' {
-    $obj.'Short Call Win Rate' | Should -Be 1.3333
+    $obj.'Short Call Win Rate' | Should -Be -0.3333
   }
 
   It 'correctly calculates the short put win rate' {
-    $obj.'Short Put Win Rate' | Should -Be 1.1
+    $obj.'Short Put Win Rate' | Should -Be -0.1
   }
 }
 
