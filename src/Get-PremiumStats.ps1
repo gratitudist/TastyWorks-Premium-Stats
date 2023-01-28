@@ -4,9 +4,11 @@ Param
   [Parameter(Mandatory=$False,Position=0)]
     [String]$InputFile='tests/tastyworks_sample.csv',
   [Parameter(Mandatory=$False,Position=1)]
-    [Switch]$ObjectOut=$False,
+    [Switch]$tradeStatsectOut=$False,
   [Parameter(Mandatory=$False,Position=2)]
-    [String]$FileType
+    [String]$FileType,
+  [Parameter(Mandatory=$False,Position=3)]
+    [Switch]$Details=$False
 )
 
 function Get-FileType {
@@ -72,52 +74,60 @@ function Get-TradeStats {
     [Parameter(Mandatory=$True,Position=1)]
       [String]$DataType
   )
-  $obj = '' | Select-Object 'Premium Sold', 'Premium Paid', 'Fees', 'Commissions', 'Profit / Loss', 'Premium Capture Rate', 'Trades', 'Long Calls Opened', 'Long Calls Closed', 'Long Puts Opened', 'Long Puts Closed', 'Short Calls Opened', 'Short Calls Closed', 'Short Puts Opened', 'Short Puts Closed'
-  $obj.'Long Calls Opened' = $obj.'Long Calls Closed' = $obj.'Long Puts Opened' = $obj.'Long Puts Closed' = $obj.'Short Calls Opened' = $obj.'Short Calls Closed' = $obj.'Short Puts Opened' = $obj.'Short Puts Closed' = 0
+  $tradeStats = '' | Select-Object 'Premium Sold', 'Premium Paid', 'Fees', `
+    'Commissions', 'Profit / Loss', 'Premium Capture Rate', 'Trades', `
+    'Long Calls Opened', 'Long Calls Closed', 'Long Puts Opened', `
+    'Long Puts Closed', 'Short Calls Opened', 'Short Calls Closed', `
+    'Short Puts Opened', 'Short Puts Closed', 'Short Call Win Rate', `
+    'Short Put Win Rate'
+  $tradeStats.'Long Calls Opened' = $tradeStats.'Long Calls Closed' `
+    = $tradeStats.'Long Puts Opened' = $tradeStats.'Long Puts Closed' `
+    = $tradeStats.'Short Calls Opened' = $tradeStats.'Short Calls Closed' `
+    = $tradeStats.'Short Puts Opened' = $tradeStats.'Short Puts Closed' = 0
   switch ($DataType) {
     'Tastyworks' {
       $TradeData | ForEach-Object { $row = $_
         switch ($row.Action) {
           'BUY_TO_OPEN' { 
-            $obj.'Premium Paid' += [Math]::Abs($row.Value) 
-            $obj.'Fees' += [Math]::Abs($row.Fees)
-            $obj.'Commissions' += [Math]::Abs($row.Commissions)
-            $obj.Trades += 1
+            $tradeStats.'Premium Paid' += [Math]::Abs($row.Value) 
+            $tradeStats.'Fees' += [Math]::Abs($row.Fees)
+            $tradeStats.'Commissions' += [Math]::Abs($row.Commissions)
+            $tradeStats.Trades += 1
             if ($row.'Call or Put' -eq 'Call') {
-              $obj.'Long Calls Opened' += 1
+              $tradeStats.'Long Calls Opened' += 1
             } elseif ($row.'Call or Put' -eq 'Put') {
-              $obj.'Long Puts Opened' += 1
+              $tradeStats.'Long Puts Opened' += 1
             }
           }
           'BUY_TO_CLOSE' { 
-            $obj.'Premium Paid' += [Math]::Abs($row.Value) 
-            $obj.'Fees' += [Math]::Abs($row.Fees)
-            $obj.Trades += 1
+            $tradeStats.'Premium Paid' += [Math]::Abs($row.Value) 
+            $tradeStats.'Fees' += [Math]::Abs($row.Fees)
+            $tradeStats.Trades += 1
             if ($row.'Call or Put' -eq 'Call') {
-              $obj.'Short Calls Closed' += 1
+              $tradeStats.'Short Calls Closed' += 1
             } elseif ($row.'Call or Put' -eq 'Put') {
-              $obj.'Short Puts Closed' += 1
+              $tradeStats.'Short Puts Closed' += 1
             }
           }
           'SELL_TO_OPEN' { 
-            $obj.'Premium Sold' += [Math]::Abs($row.Value) 
-            $obj.'Fees' += [Math]::Abs($row.Fees)
-            $obj.'Commissions' += [Math]::Abs($row.Commissions)
-            $obj.Trades += 1
+            $tradeStats.'Premium Sold' += [Math]::Abs($row.Value) 
+            $tradeStats.'Fees' += [Math]::Abs($row.Fees)
+            $tradeStats.'Commissions' += [Math]::Abs($row.Commissions)
+            $tradeStats.Trades += 1
             if ($row.'Call or Put' -eq 'Call') {
-              $obj.'Short Calls Opened' += 1
+              $tradeStats.'Short Calls Opened' += 1
             } elseif ($row.'Call or Put' -eq 'Put') {
-              $obj.'Short Puts Opened' += 1
+              $tradeStats.'Short Puts Opened' += 1
             }
           }
           'SELL_TO_CLOSE' { 
-            $obj.'Premium Sold' += [Math]::Abs($row.Value) 
-            $obj.'Fees' += [Math]::Abs($row.Fees)
-            $obj.Trades += 1
+            $tradeStats.'Premium Sold' += [Math]::Abs($row.Value) 
+            $tradeStats.'Fees' += [Math]::Abs($row.Fees)
+            $tradeStats.Trades += 1
             if ($row.'Call or Put' -eq 'Call') {
-              $obj.'Long Calls Closed' += 1
+              $tradeStats.'Long Calls Closed' += 1
             } elseif ($row.'Call or Put' -eq 'Put') {
-              $obj.'Long Puts Closed' += 1
+              $tradeStats.'Long Puts Closed' += 1
             }
           }
         }
@@ -127,57 +137,72 @@ function Get-TradeStats {
       $TradeData | ForEach-Object { $row = $_
         switch -Wildcard ($row.Action) {
           'YOU BOUGHT OPENING*' {
-            $obj.'Premium Paid' += [Math]::Round([Int]$row.Quantity * 100 * [Decimal]$row.Price, 2)
-            $obj.Fees += [Math]::Round([Decimal]$row.Fees, 2)
-            $obj.Commissions += [Math]::Round([Decimal]$row.Commission, 2)
-            $obj.Trades += 1
+            $tradeStats.'Premium Paid' += [Math]::Round([Int]$row.Quantity * 100 * [Decimal]$row.Price, 2)
+            $tradeStats.Fees += [Math]::Round([Decimal]$row.Fees, 2)
+            $tradeStats.Commissions += [Math]::Round([Decimal]$row.Commission, 2)
+            $tradeStats.Trades += 1
             if ($row.'Security Description' -match 'CALL\s.*') {
-              $obj.'Long Calls Opened' += 1
+              $tradeStats.'Long Calls Opened' += 1
             } elseif ($row.'Security Description' -match 'PUT\s.*') {
-              $obj.'Long Puts Opened' += 1
+              $tradeStats.'Long Puts Opened' += 1
             }
           }
           'YOU BOUGHT CLOSING*' {
-            $obj.'Premium Paid' += [Math]::Round([Int]$row.Quantity * 100 * [Decimal]$row.Price, 2)
-            $obj.Fees += [Math]::Round([Decimal]$row.Fees, 2)
-            $obj.Commissions += [Math]::Round([Decimal]$row.Commission, 2)
-            $obj.Trades += 1
+            $tradeStats.'Premium Paid' += [Math]::Round([Int]$row.Quantity * 100 * [Decimal]$row.Price, 2)
+            $tradeStats.Fees += [Math]::Round([Decimal]$row.Fees, 2)
+            $tradeStats.Commissions += [Math]::Round([Decimal]$row.Commission, 2)
+            $tradeStats.Trades += 1
             if ($row.'Security Description' -match 'CALL\s.*') {
-              $obj.'Short Calls Closed' += 1
+              $tradeStats.'Short Calls Closed' += 1
             } elseif ($row.'Security Description' -match 'PUT\s.*') {
-              $obj.'Short Puts Closed' += 1
+              $tradeStats.'Short Puts Closed' += 1
             }
           }
           'YOU SOLD OPENING*' {
-            $obj.'Premium Sold' += [Math]::Round([Math]::Abs($row.Quantity) * 100 * [Decimal]$row.Price, 2)
-            $obj.Fees += [Math]::Round([Decimal]$row.Fees, 2)
-            $obj.Commissions += [Math]::Round([Decimal]$row.Commission, 2)
-            $obj.Trades += 1
+            $tradeStats.'Premium Sold' += [Math]::Round([Math]::Abs($row.Quantity) * 100 * [Decimal]$row.Price, 2)
+            $tradeStats.Fees += [Math]::Round([Decimal]$row.Fees, 2)
+            $tradeStats.Commissions += [Math]::Round([Decimal]$row.Commission, 2)
+            $tradeStats.Trades += 1
             if ($row.'Security Description' -match 'CALL\s.*') {
-              $obj.'Short Calls Opened' += 1
+              $tradeStats.'Short Calls Opened' += 1
             } elseif ($row.'Security Description' -match 'PUT\s.*') {
-              $obj.'Short Puts Opened' += 1
+              $tradeStats.'Short Puts Opened' += 1
             }
           }
           'YOU SOLD CLOSING*' {
-            $obj.'Premium Sold' += [Math]::Round([Math]::Abs($row.Quantity) * 100 * [Decimal]$row.Price, 2)
-            $obj.Fees += [Math]::Round([Decimal]$row.Fees, 2)
-            $obj.Commissions += [Math]::Round([Decimal]$row.Commission, 2)
-            $obj.Trades += 1
+            $tradeStats.'Premium Sold' += [Math]::Round([Math]::Abs($row.Quantity) * 100 * [Decimal]$row.Price, 2)
+            $tradeStats.Fees += [Math]::Round([Decimal]$row.Fees, 2)
+            $tradeStats.Commissions += [Math]::Round([Decimal]$row.Commission, 2)
+            $tradeStats.Trades += 1
             if ($row.'Security Description' -match 'CALL\s.*') {
-              $obj.'Long Calls Closed' += 1
+              $tradeStats.'Long Calls Closed' += 1
             } elseif ($row.'Security Description' -match 'PUT\s.*') {
-              $obj.'Long Puts Closed' += 1
+              $tradeStats.'Long Puts Closed' += 1
             }
           }
         }
       }    
     }
   }
-  $obj.Fees = [Math]::Round($obj.Fees, 2)
-  $obj.'Profit / Loss' = [Math]::Round((($obj.'Premium Sold' - $obj.'Premium Paid') - ($obj.Fees + $obj.Commissions)), 2)
-  $obj.'Premium Capture Rate' = [Math]::Round(((($obj.'Premium Sold' - $obj.'Premium Paid') - ($obj.Fees + $obj.Commissions)) / $obj.'Premium Sold'), 4)
-  $obj
+  $tradeStats.Fees = [Math]::Round($tradeStats.Fees, 2)
+  $tradeStats.'Profit / Loss' = `
+    [Math]::Round(
+      (($tradeStats.'Premium Sold' - $tradeStats.'Premium Paid') `
+        - ($tradeStats.Fees + $tradeStats.Commissions)), 2)
+  $tradeStats.'Premium Capture Rate' = `
+    [Math]::Round(
+      ((($tradeStats.'Premium Sold' - $tradeStats.'Premium Paid') `
+        - ($tradeStats.Fees + $tradeStats.Commissions)) `
+        / $tradeStats.'Premium Sold'), 4)
+  if ($tradeStats.'Short Calls Closed') {
+    $tradeStats.'Short Call Win Rate' = `
+      [Math]::Round($tradeStats.'Short Calls Closed' / $tradeStats.'Short Calls Opened', 4)
+  } else { $tradeStats.'Short Call Win Rate' = 1 }
+  if ($tradeStats.'Short Puts Closed') {
+    $tradeStats.'Short Put Win Rate' = `
+      [Math]::Round($tradeStats.'Short Puts Closed' / $tradeStats.'Short Puts Opened', 4)
+  } else { $tradeStats.'Short Put Win Rate' = 1 }
+  $tradeStats
 }
 
 if (Test-Path -Path $InputFile)
@@ -191,25 +216,29 @@ if (Test-Path -Path $InputFile)
   Write-Output ("InputFile '{0}' not found." -f $InputFile)
 }
 
-$obj = Get-TradeStats -TradeData $TradeData -DataType $FileType
+$tradeStats = Get-TradeStats -TradeData $TradeData -DataType $FileType
 
-if ($ObjectOut) {
-  $obj
+if ($tradeStatsectOut) {
+  $tradeStats
 } else {
-  "`n        Premium Sold : {0,15:C}" -f $obj.'Premium Sold'
-  "        Premium Paid : {0,15:C}" -f $obj.'Premium Paid'
-  "                Fees : {0,15:C}" -f $obj.Fees
-  "         Commissions : {0,15:C}" -f $obj.Commissions
-  "       Profit / Loss : {0,15:C}" -f $obj.'Profit / Loss'
-  "Premium Capture Rate : {0,15:P2}" -f $obj.'Premium Capture Rate'
-  "              Trades : {0,15}" -f $obj.Trades
-  "   Long Calls Opened : {0,15}" -f $obj.'Long Calls Opened'
-  "   Long Calls Closed : {0,15}" -f $obj.'Long Calls Closed'
-  "  Short Calls Opened : {0,15}" -f $obj.'Short Calls Opened'
-  "  Short Calls Closed : {0,15}" -f $obj.'Short Calls Closed'
-  "    Long Puts Opened : {0,15}" -f $obj.'Long Puts Opened'
-  "    Long Puts Closed : {0,15}" -f $obj.'Long Puts Closed'
-  "   Short Puts Opened : {0,15}" -f $obj.'Short Puts Opened'
-  "   Short Puts Closed : {0,15}`n" -f $obj.'Short Puts Closed'
+  "`n        Premium Sold: {0,15:C}" -f $tradeStats.'Premium Sold'
+  "        Premium Paid: {0,15:C}" -f $tradeStats.'Premium Paid'
+  "                Fees: {0,15:C}" -f $tradeStats.Fees
+  "         Commissions: {0,15:C}" -f $tradeStats.Commissions
+  "       Profit / Loss: {0,15:C}" -f $tradeStats.'Profit / Loss'
+  "Premium Capture Rate: {0,15:P2}" -f $tradeStats.'Premium Capture Rate'
+  "              Trades: {0,15}" -f $tradeStats.Trades
+  if ($details) {
+    "   Long Calls Opened: {0,15}" -f $tradeStats.'Long Calls Opened'
+    "   Long Calls Closed: {0,15}" -f $tradeStats.'Long Calls Closed'
+    "  Short Calls Opened: {0,15}" -f $tradeStats.'Short Calls Opened'
+    "  Short Calls Closed: {0,15}" -f $tradeStats.'Short Calls Closed'
+    "    Long Puts Opened: {0,15}" -f $tradeStats.'Long Puts Opened'
+    "    Long Puts Closed: {0,15}" -f $tradeStats.'Long Puts Closed'
+    "   Short Puts Opened: {0,15}" -f $tradeStats.'Short Puts Opened'
+    "   Short Puts Closed: {0,15}" -f $tradeStats.'Short Puts Closed'
+  }
+  " Short Call Win Rate: {0,15:P2}" -f $tradeStats.'Short Call Win Rate'
+  "  Short Put Win Rate: {0,15:P2}`n" -f $tradeStats.'Short Put Win Rate'
 
 }
