@@ -4,7 +4,7 @@ Param
   [Parameter(Mandatory=$False,Position=0)]
     [String]$InputFile='tests/tastyworks_sample.csv',
   [Parameter(Mandatory=$False,Position=1)]
-    [Switch]$tradeStatsectOut=$False,
+    [Switch]$ObjectOut=$False,
   [Parameter(Mandatory=$False,Position=2)]
     [String]$FileType,
   [Parameter(Mandatory=$False,Position=3)]
@@ -218,7 +218,7 @@ if (Test-Path -Path $InputFile)
 
 $tradeStats = Get-TradeStats -TradeData $TradeData -DataType $FileType
 
-if ($tradeStatsectOut) {
+if ($ObjectOut) {
   $tradeStats
 } else {
   "`n        Premium Sold: {0,15:C}" -f $tradeStats.'Premium Sold'
