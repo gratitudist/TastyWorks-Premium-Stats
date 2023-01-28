@@ -9,7 +9,7 @@ Note also: This is not affiliated with Tastyworks or Fidelity in any way.
 Added trade type information to the output. This may be useful for determining win rates, how many short positions were stopped out, etc.<br />
 Added -Details flag to control the"pretty print" output of the above trade details. Object output will always include these details.<br />
 Added win rate properties for short calls and puts.<br />
-*Please note:* The win rate calculations are overly naive at this point and the code needs to be made more accurate. Wins are currently based purely on short positions being opened without being closed, assuming they expired worthless, which is obviously not always the case. The short position could be closed early for a profit or expire in the money. I'm working on a robust solution, but it will take some time. 
+*Please note:* The win rate calculations are overly naive at this point and the code needs to be made more accurate. Wins are currently based purely on short positions being opened without being closed, assuming they expired worthless, which is obviously not always the case. The short position could be closed early for a profit or expire in the money. I'm working on a robust solution, but it will take some time.<br />
 Examples:
 
 Tastyworks example without details:
