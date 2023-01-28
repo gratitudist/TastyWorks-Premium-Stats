@@ -6,9 +6,9 @@ Note: The script doesn't currently account for open v closed positions. So if yo
 Note also: This is not affiliated with Tastyworks or Fidelity in any way.
 
 ### New:
-Added trade type information to the output. This may be useful for determining win rates, how many short positions were stopped out, etc.
-Added -Details flag to control the"pretty print" output of the above trade details. Object output will always include these details.
-Added win rate properties for short calls and puts.
+Added trade type information to the output. This may be useful for determining win rates, how many short positions were stopped out, etc.<br />
+Added -Details flag to control the"pretty print" output of the above trade details. Object output will always include these details.<br />
+Added win rate properties for short calls and puts.<br />
 
 Examples:
 
