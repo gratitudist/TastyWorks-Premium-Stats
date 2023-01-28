@@ -23,8 +23,8 @@ Tastyworks example without details:
        Profit / Loss:         $641.12
 Premium Capture Rate:          20.71%
               Trades:              63
- Short Call Win Rate:         100.00%
-  Short Put Win Rate:          92.86%
+ Short Call Win Rate:           0.00%
+  Short Put Win Rate:           7.14%
 ```
 Tastyworks example with details:
 ```
@@ -45,8 +45,8 @@ Premium Capture Rate:          20.71%
     Long Puts Closed:               0
    Short Puts Opened:              14
    Short Puts Closed:              13
- Short Call Win Rate:         100.00%
-  Short Put Win Rate:          92.86%
+ Short Call Win Rate:           0.00%
+  Short Put Win Rate:           7.14%
 ```
 Fidelity Account_history.csv example:
 ```
@@ -59,8 +59,8 @@ Fidelity Account_history.csv example:
        Profit / Loss:         $279.31
 Premium Capture Rate:           8.04%
               Trades:              61
- Short Call Win Rate:         133.33%
-  Short Put Win Rate:         110.00%
+ Short Call Win Rate:         -33.33%
+  Short Put Win Rate:         -10.00%
 ```
 Example of returning a PowerShell object:
 ```
@@ -81,12 +81,14 @@ Short Calls Opened   : 12
 Short Calls Closed   : 12
 Short Puts Opened    : 14
 Short Puts Closed    : 13
+Short Call Win Rate  : 0
+Short Put Win Rate   : 0.0714
 ```
 Example of converting PowerShell output object to CSV data:
 ```
 ./src/Get-PremiumStats.ps1 -InputFile ./tests/tastyworks_sample.csv -ObjectOut | ConvertTo-Csv -NoTypeInformation
 "Premium Sold","Premium Paid","Fees","Commissions","Profit / Loss","Premium Capture Rate","Trades","Long Calls Opened","Long Calls Closed","Long Puts Opened","Long Puts Closed","Short Calls Opened","Short Calls Closed","Short Puts Opened","Short Puts Closed","Short Call Win Rate","Short Put Win Rate"
-"3095","2365","50.88","38","641.12","0.2071","63","6","1","5","0","12","12","14","13","1","0.9286"
+"3095","2365","50.88","38","641.12","0.2071","63","6","1","5","0","12","12","14","13","0","0.0714"
 ```
 ### Request to readers:
 If you're on a different platform than Tastyworks and have similar CSV output from your platform that you'd like to be able to parse in this way, I'm willing to write a similar script, or even a script that's capable of handling CSV files from multiple platforms. I just need samples CSV files. If this interests you and you're willing to share sample CSVs fro your broker, please let me know. 
