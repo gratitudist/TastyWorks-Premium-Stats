@@ -196,11 +196,11 @@ function Get-TradeStats {
         / $tradeStats.'Premium Sold'), 4)
   if ($tradeStats.'Short Calls Closed') {
     $tradeStats.'Short Call Win Rate' = `
-      [Math]::Round($tradeStats.'Short Calls Closed' / $tradeStats.'Short Calls Opened', 4)
+      [Math]::Round(($tradeStats.'Short Calls Opened' - $tradeStats.'Short Calls Closed') / $tradeStats.'Short Calls Opened', 4)
   } else { $tradeStats.'Short Call Win Rate' = 1 }
   if ($tradeStats.'Short Puts Closed') {
     $tradeStats.'Short Put Win Rate' = `
-      [Math]::Round($tradeStats.'Short Puts Closed' / $tradeStats.'Short Puts Opened', 4)
+      [Math]::Round(($tradeStats.'Short Puts Opened' - $tradeStats.'Short Puts Closed') / $tradeStats.'Short Puts Opened', 4)
   } else { $tradeStats.'Short Put Win Rate' = 1 }
   $tradeStats
 }
