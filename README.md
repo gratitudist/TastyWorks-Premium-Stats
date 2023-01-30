@@ -3,7 +3,7 @@
 A PowerShell script that calculates premium sold, premium paid, fees, commissions, profit and loss, premium capture rate and number of trades from TastyWorks history CSV and Fidelity Account_Hisotry.csv files.
 
 Note: The script doesn't currently account for open v closed positions. So if you have open trades when running the script, keep that in mind.
-Note also: This is not affiliated with Tastyworks or Fidelity in any way.
+Note also: This is not affiliated with Tastyworks or Fidelity in any way. This script does not currently handle assignment, stock purchases, stock sales, short selling of stock, probably other things. If you've done these things in your TW account and have a CSV that includes these trades, if you're willing to share it, I'm willing to write the code to cover those situations.
 
 ### New:
 Added trade type information to the output. This may be useful for determining win rates, how many short positions were stopped out, etc.<br />
